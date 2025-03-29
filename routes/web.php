@@ -26,3 +26,7 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/pos', \App\Http\Livewire\Pos\PosInterface::class)->name('pos');
+});

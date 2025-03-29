@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,8 +18,14 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot() //: void
     {
         //
+        Livewire::component('pos.barcode-scanner', \App\Http\Livewire\Pos\BarcodeScanner::class);
+        
+        Livewire::component('pos.pos-interface', \App\Http\Livewire\Pos\PosInterface::class); 
+
+        Livewire::component('inventory-alert', \App\Http\Livewire\InventoryAlert::class);
+        Livewire::component('user-security', \App\Http\Livewire\UserSecurity::class);
     }
 }
