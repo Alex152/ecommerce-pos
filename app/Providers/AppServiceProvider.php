@@ -25,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
         
         Livewire::component('pos.pos-interface', \App\Http\Livewire\Pos\PosInterface::class); 
 
+        Livewire::component('pos.customer-search', \App\Http\Livewire\Pos\CustomerSearch::class); 
+
         Livewire::component('inventory-alert', \App\Http\Livewire\InventoryAlert::class);
         Livewire::component('user-security', \App\Http\Livewire\UserSecurity::class);
     }

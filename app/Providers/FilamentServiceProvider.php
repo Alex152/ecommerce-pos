@@ -9,6 +9,27 @@ use Illuminate\Support\Facades\Blade;
 
 class FilamentServiceProvider extends ServiceProvider
 {
+
+    protected static array $resources = [
+        \App\Filament\Resources\ProductResource::class,
+        \App\Filament\Resources\SaleResource::class,
+        \App\Filament\Resources\CustomerResource::class,
+        \App\Filament\Resources\OrderResource::class,
+        \App\Filament\Resources\CategoryResource::class,
+        \App\Filament\Resources\InventoryResource::class,
+        \App\Filament\Resources\SystemSettingResource::class,
+        \App\Filament\Resources\DiscountResource::class,
+        \App\Filament\Resources\TaxResource::class,
+        \App\Filament\Resources\ShippingCarrierResource::class,
+        \App\Filament\Resources\UserResource::class,
+        \App\Filament\Resources\UserResource::class,
+        \App\Filament\Resources\ReportResource::class,
+        \App\Filament\Resources\RoleResource::class,
+        \App\Filament\Resources\PermissionResource::class,
+        \App\Filament\Resources\InventoryMovementResource::class,
+        \App\Filament\Resources\WarehouseResource::class,
+    ];
+
     public function boot()
     {
         Filament::serving(function () {
