@@ -10,9 +10,21 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
-    public function register(): void
+    public function register()//: void
     {
         //
+        $this->app->singleton(BarcodeService::class);
+        $this->app->singleton(PaymentService::class);
+        $this->app->singleton(InventoryService::class);
+        $this->app->singleton(TaxService::class);
+        $this->app->singleton(ShippingCalculator::class);
+        $this->app->singleton(ExportService::class);
+        $this->app->singleton(NotificationService::class);
+        $this->app->singleton(RateLimiterService::class);
+        $this->app->singleton(ReportService::class);
+        $this->app->singleton(RolePermissionSyncService::class);
+        $this->app->singleton(SessionSecurityService::class);
+        $this->app->singleton(TwoFactorAuthService::class);
     }
 
     /**

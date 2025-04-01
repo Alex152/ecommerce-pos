@@ -49,4 +49,18 @@ class Customer extends Model
     {
         return "{$this->address}, {$this->city}, {$this->country}";
     }
+
+    // Momentania mente para manegar dinamicamente el customer label en Sales Resource
+    public function getCustomerLabel(): string
+    {
+        $label = $this->dni;
+        
+        if (!empty($this->company_name)) {
+            $label .= " - {$this->company_name}";
+        } elseif ($this->user) {
+            $label .= " - {$this->user->name}";
+        }
+        
+        return $label;
+    }
 }

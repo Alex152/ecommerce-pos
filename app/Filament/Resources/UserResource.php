@@ -13,6 +13,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\BadgeColumn;
+use Filament\Forms\Components\Select;
+use Spatie\Permission\Models\Role;
 
 class UserResource extends Resource
 {
@@ -34,7 +36,17 @@ class UserResource extends Resource
             Forms\Components\Toggle::make('two_factor_secret')
                 ->label('2FA Enabled')
                 ->disabled(),
-        ]);
+
+            // Campo de selección para los roles
+            Select::make('roles')
+                ->label('Roles')
+                ->multiple() // Permite seleccionar múltiples roles
+                ->options(function () {
+                    return Role::all()->pluck('name', 'id'); // Obtiene todos los roles
+                })
+                ->reactive() // Hace que el campo se actualice dinámicamente si es necesario
+                ->required(),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -47,6 +59,10 @@ class UserResource extends Resource
                 ->colors(['primary']),
             Tables\Columns\BooleanColumn::make('two_factor_secret')
                 ->label('2FA'),
+
+            BadgeColumn::make('roles.name')
+                ->label('Role')
+                ->colors(['primary']),
         ]);
     }
 

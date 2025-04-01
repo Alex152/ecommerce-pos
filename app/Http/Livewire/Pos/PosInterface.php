@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Customer;
 use App\Models\Sale;
 use App\Models\SaleItem;
+use App\Models\Payment;
 use Illuminate\Support\Facades\DB;
 
 class PosInterface extends Component
@@ -111,7 +112,8 @@ class PosInterface extends Component
         });
 
         $this->reset();
-        $this->emit('saleCompleted');
+        //$this->emit('saleCompleted');  // Ya no existe en versiones recientes de liveire
+        $this->dispatch('saleCompleted');
     }
 
     public function render()

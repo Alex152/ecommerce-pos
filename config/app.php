@@ -172,6 +172,8 @@ return [
         App\Providers\FortifyServiceProvider::class,
         App\Providers\JetstreamServiceProvider::class,
         Filament\FilamentServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ])->toArray(),
 
     /*
@@ -187,6 +189,8 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class,
     ])->toArray(),
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 
 ];

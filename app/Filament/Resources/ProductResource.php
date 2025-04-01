@@ -38,17 +38,54 @@ class ProductResource extends Resource
                     ->numeric()
                     ->required()
                     ->prefix('$'),
+                Forms\Components\TextInput::make('cost_price')
+                    ->label('Costo interno')
+                    ->numeric()
+                    ->prefix('$'),
                 Forms\Components\TextInput::make('stock_quantity')
                     ->numeric()
                     ->required(),
+                Forms\Components\TextInput::make('min_stock')
+                    ->label('Stock mínimo')
+                    ->numeric()
+                    ->default(5),
                 Forms\Components\Select::make('category_id')
                     ->relationship('category', 'name')
                     ->required(),
+
+                
+                /*
                 Forms\Components\FileUpload::make('images')
                     ->directory('products')
                     ->multiple()
                     ->image(),
+                */
+
+                Forms\Components\Section::make('Imágenes')
+                    ->schema([
+                        Forms\Components\FileUpload::make('images')
+                           
+                            ->image()
+                            ->directory('products')
+                            ->preserveFilenames()
+                            ->imageEditor(),
+                    ]),
+
+                Forms\Components\Section::make('Estado')
+                    ->schema([
+                        Forms\Components\Toggle::make('is_active')
+                            ->label('Activo')
+                            ->default(true),
+                        /*
+                        Forms\Components\Toggle::make('has_variants')
+                            ->label('Tiene variantes')
+                            ->reactive(),
+                        */
+                    ])->columns(2),
+                
             ]);
+
+            
     }
 
     public static function table(Table $table): Table
@@ -69,10 +106,19 @@ class ProductResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock_quantity')
                     ->sortable(),
+                Tables\Columns\IconColumn::make('is_active')
+                ->label('Activo')
+                ->boolean(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('category')
                     ->relationship('category', 'name'),
+                Tables\Filters\TernaryFilter::make('is_active')
+                    ->label('Estado')
+                    ->boolean()
+                    ->trueLabel('Solo activos')
+                    ->falseLabel('Solo inactivos')
+                    ->native(false),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
