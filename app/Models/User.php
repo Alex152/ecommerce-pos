@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+/*
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -48,5 +49,120 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasAccessToPos(): bool
     {
         return $this->hasAnyRole(['super-admin', 'cashier']);
+    }
+}
+    */
+
+
+namespace App\Models;
+
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles; // Asegúrate de tener instalado spatie/laravel-permission
+
+class User extends Authenticatable
+{
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'phone',
+        'address',
+        'city',
+        'state',
+        'zip_code',
+        'country',
+        'role',
+        'is_active',
+        'pos_pin',
+        'barcode',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        // Agrega aquí cualquier otro campo específico de tu repositorio
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+        'pos_pin', // Oculto por seguridad
+        'two_factor_secret',
+        'two_factor_recovery_codes'
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'is_active' => 'boolean'
+    ];
+
+    #########################################
+    ### RELACIONES ORIGINALES DEl REPO ###
+    #########################################
+
+    // Relación con ventas (POS)
+    public function sales()
+    {
+        return $this->hasMany(\App\Models\Sale::class, 'cashier_id');
+    }
+
+    // Relación con órdenes (eCommerce)
+    public function orders()
+    {
+        return $this->hasMany(\App\Models\Order::class, 'user_id');
+    }
+
+    // Relación con sesiones de POS
+    public function posSessions()
+    {
+        return $this->hasMany(\App\Models\PosSession::class, 'cashier_id');
+    }
+
+    #######################################
+    ### MÉTODOS ORIGINALES DE  REPO ###
+    #######################################
+
+    public function hasAccessToPos(): bool
+    {
+        return $this->hasAnyRole(['super-admin', 'cashier', 'admin']);
+    }
+
+    public function canManageProducts(): bool
+    {
+        return $this->hasAnyRole(['super-admin', 'manager']);
+    }
+
+    #######################################
+    ### MEJORAS Y MÉTODOS ADICIONALES ###
+    #######################################
+
+    // Verificación segura de PIN
+    public function verifyPosPin(string $pin): bool
+    {
+        return hash_equals($this->pos_pin ?? '', $pin);
+    }
+
+    // Generación automática de barcode
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            if (empty($user->barcode)) {
+                $user->barcode = 'EMP' . now()->format('ymd') . str_pad(
+                    (int) self::count(),//withTrashed()->count() + 1,    // Con soft delete
+                    4, '0', STR_PAD_LEFT
+                );
+            }
+        });
+    }
+
+    // Método para dashboard
+    public function getTodaySalesAttribute()
+    {
+        return $this->sales()->whereDate('created_at', today())->sum('total');
     }
 }

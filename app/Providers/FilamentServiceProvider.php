@@ -28,6 +28,7 @@ class FilamentServiceProvider extends ServiceProvider
         \App\Filament\Resources\PermissionResource::class,
         \App\Filament\Resources\InventoryMovementResource::class,
         \App\Filament\Resources\WarehouseResource::class,
+        \App\Filament\Resources\MovementResource::class,
     ];
 
     public function boot()

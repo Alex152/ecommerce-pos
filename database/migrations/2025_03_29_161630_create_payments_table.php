@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
+        /*
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('payable_id');
@@ -22,6 +23,19 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['payable_id', 'payable_type']);
+        });
+        */
+
+
+        Schema::create('payments', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('order_id')->constrained()->cascadeOnDelete();
+            $table->decimal('amount', 10, 2);
+            $table->enum('method', ['cash', 'credit_card', 'debit_card', 'bank_transfer', 'check', 'other']);
+            $table->string('reference')->nullable();
+            $table->enum('status', ['pending', 'completed', 'failed', 'refunded'])->default('completed');
+            $table->text('notes')->nullable();
+            $table->timestamps();
         });
     }
 

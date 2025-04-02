@@ -6,15 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    
     public function up(): void
     {
+        /*
         Schema::create('system_settings', function (Blueprint $table) {
             $table->id();
             $table->string('key')->unique();
             $table->json('value');
+            $table->text('description')->nullable();
+            $table->timestamps();
+        });
+        */
+
+        Schema::create('system_settings', function (Blueprint $table) {
+            $table->id();
+            $table->string('key')->unique();
+            $table->text('value');
             $table->text('description')->nullable();
             $table->timestamps();
         });

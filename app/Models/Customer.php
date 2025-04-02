@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+/*
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -63,4 +64,93 @@ class Customer extends Model
         
         return $label;
     }
+    
+}
+    */
+
+
+
+
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Customer extends Model
+{
+    protected $fillable = [
+        'name',
+        'email',
+        'phone',
+        'address',
+        'city',
+        'state',
+        'zip_code',
+        'country',
+        'tax_id',
+        'type',
+        'notes',
+        'credit_limit',
+        'balance',
+        'is_active',
+
+        //nuevo
+        'loyalty_points',
+        'birthdate',
+        'preferred_payment_method'
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'credit_limit' => 'decimal:2',
+        'balance' => 'decimal:2',
+
+        //Nuevo
+        'birthdate' => 'date',
+        'loyalty_points' => 'integer'
+    ];
+
+      // Relaciones
+      public function orders(): HasMany
+      {
+          return $this->hasMany(Order::class);
+      }
+  
+      public function sales(): HasMany
+      {
+          return $this->hasMany(Sale::class);
+      }
+  
+      public function addresses(): HasMany
+      {
+          return $this->hasMany(CustomerAddress::class);
+      }
+  
+      public function payments(): MorphMany
+      {
+          return $this->morphMany(Payment::class, 'payable');
+      }
+  
+      // Scopes
+      public function scopeActive($query)
+      {
+          return $query->where('is_active', true);
+      }
+  
+      public function scopeWithCredit($query)
+      {
+          return $query->where('credit_limit', '>', 0);
+      }
+  
+      // Métodos
+      public function canPurchaseOnCredit($amount): bool
+      {
+          return $this->credit_limit > 0 && 
+                 ($this->credit_limit - $this->balance) >= $amount;
+      }
+  
+      public function updateBalance($amount): void
+      {
+          $this->balance += $amount;
+          $this->save();
+      }
 }
