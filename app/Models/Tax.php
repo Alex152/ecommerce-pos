@@ -23,4 +23,10 @@ class Tax extends Model
     {
         return $this->belongsToMany(Product::class);
     }
+
+        public function orderItems(): BelongsToMany
+    {
+        //return $this->belongsToMany(OrderItem::class)->withPivot('amount');
+        return $this->belongsToMany(OrderItem::class, 'order_item_tax')->withPivot('amount');
+    }
 }

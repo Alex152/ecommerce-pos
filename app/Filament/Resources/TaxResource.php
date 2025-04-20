@@ -27,6 +27,8 @@ class TaxResource extends Resource
             Forms\Components\TextInput::make('rate')
                 ->numeric()
                 ->suffix('%')
+                ->minValue(0)
+                ->maxValue(100)
                 ->required(),
             Forms\Components\Toggle::make('is_active')
                 ->default(true),
@@ -38,7 +40,8 @@ class TaxResource extends Resource
         return $table->columns([
             Tables\Columns\TextColumn::make('name'),
             Tables\Columns\TextColumn::make('rate')
-                ->suffix('%'),
+                ->suffix('%')
+                ->sortable(),
             Tables\Columns\BooleanColumn::make('is_active'),
         ]);
     }

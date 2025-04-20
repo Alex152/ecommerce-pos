@@ -24,15 +24,46 @@
         <!-- Cart -->
         <div class="bg-white p-4 rounded shadow">
             <h2 class="text-xl font-bold mb-4">Current Sale</h2>
-            <div class="mb-4">
+            <div class="mb-4 relative" x-data="{ open: false }">
                 <label class="block mb-2">Customer</label>
-                <select wire:model="customer_id" class="w-full border rounded p-2">
-                    <option value="">Walk-in Customer</option>
-                    @foreach($customers as $customer)
-                    <option value="{{ $customer->id }}">{{ $customer->name }}</option>
-                    @endforeach
-                </select>
+                <input 
+                    type="text" 
+                    wire:model.live="customerSearch" 
+                    @keyup="open = $event.target.value.length > 0"
+                    @focus="$event.target.value.length > 0 ? open = true : open = false"
+                    @click.away="open = false"
+                    placeholder="Search customer..."
+                    class="w-full border rounded p-2"
+                >
+                
+                <div x-show="open" class="absolute z-10 w-full mt-1 bg-white border rounded shadow-lg max-h-60 overflow-auto">
+                    <ul>
+                        @if($customerSearch)
+                            @foreach($filteredCustomers as $customer)
+                                <li 
+                                    wire:click="selectCustomer({{ $customer->id }})"
+                                    @click="open = false"
+                                    class="p-2 hover:bg-gray-100 cursor-pointer"
+                                >
+                                    {{ $customer->name }}
+                                </li>
+                            @endforeach
+                            
+                            @if($filteredCustomers->isEmpty())
+                                <li class="p-2 text-gray-500">No customers found</li>
+                            @endif
+                        @endif
+                    </ul>
+                </div>
+                
+                <!-- Mostrar el cliente seleccionado -->
+                @if($selectedCustomerName)
+                    <div class="mt-2 p-2 bg-gray-100 rounded">
+                        Selected: {{ $selectedCustomerName }}
+                    </div>
+                @endif
             </div>
+
 
             <div class="cart-items mb-4">
                 @foreach($cart as $index => $item)

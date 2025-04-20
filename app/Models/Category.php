@@ -49,6 +49,7 @@ class Category extends Model implements HasMedia
 
     protected $casts = [
         'is_visible' => 'boolean',
+        'meta_keywords' => 'array',
     ];
 
     public function parent(): BelongsTo

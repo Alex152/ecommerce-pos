@@ -7,10 +7,11 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Models\Inventory;
 
 class InventoryRelationManager extends RelationManager
 {
-    protected static string $relationship = 'inventories';
+    protected static string $relationship = 'inventory'; //antes inventories
 
     public function form(Form $form): Form
     {

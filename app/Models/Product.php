@@ -148,4 +148,22 @@ class Product extends Model
             $this->addMediaCollection('gallery')
                 ->useDisk('public');
         }
+
+        //Para DiscountResource/ProductRelationManager
+
+        public function discounts(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+        {
+            return $this->belongsToMany(Discount::class)
+                ->withPivot('discount_value');
+        }
+
+        /*
+        en caso que se quiera que se puestre las etiquetas de los selects 
+        globalmente con el name del producto
+
+        public function getFilamentRecordTitle(): string
+        {
+            return $this->name;
+        }
+        */
     }

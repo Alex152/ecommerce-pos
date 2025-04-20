@@ -10,6 +10,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Models\ProductVariant;
+use Illuminate\Support\Str;
 
 class ProductResource extends Resource
 {
@@ -26,7 +28,14 @@ class ProductResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->reactive()
+                            ->afterStateUpdated(fn ($state, callable $set) => $set('slug', Str::slug($state))),
+                        
+                        Forms\Components\TextInput::make('slug')
+                            ->required()
+                            ->unique(ignoreRecord: true),
+
                         Forms\Components\TextInput::make('sku')
                             ->unique(ignoreRecord: true)
                             ->maxLength(50),
@@ -48,6 +57,9 @@ class ProductResource extends Resource
                         Forms\Components\TextInput::make('cost_price')
                             ->numeric()
                             ->prefix('$'),
+                        Forms\Components\TextInput::make('stock_quantity')
+                            ->numeric()
+                            ->default(0),
                         Forms\Components\Toggle::make('has_variants')
                             ->live()
                             ->label('Tiene Variantes'),
@@ -64,6 +76,31 @@ class ProductResource extends Resource
                         Forms\Components\Toggle::make('is_featured')
                             ->label('Destacado'),
                     ])->columns(3),
+
+                
+                    Forms\Components\Section::make('Variantes')
+                    ->schema([
+                        Forms\Components\Repeater::make('variants')
+                            ->relationship('variants')
+                            ->schema([
+                                Forms\Components\TextInput::make('name')->required(),
+                                Forms\Components\TextInput::make('sku')->unique(),
+                                Forms\Components\TextInput::make('price')
+                                    ->numeric()
+                                    ->required(),
+                                Forms\Components\TextInput::make('stock_quantity')
+                                    ->numeric()
+                                    ->default(0),
+                            ])
+                            //->columnSpanFull(),
+                    ])->visible(fn ($get) => $get('has_variants')),
+
+                Forms\Components\Section::make('SEO')
+                    ->schema([
+                        Forms\Components\TextInput::make('meta_title'),
+                        Forms\Components\Textarea::make('meta_description'),
+                    ]),
+                    
             ]);
     }
 
@@ -78,6 +115,9 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('price')
                     ->money('USD')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('stock_quantity')
+                    ->label('Stock')
+                    ->numeric(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Activo')
                     ->boolean(),

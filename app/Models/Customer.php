@@ -74,6 +74,8 @@ class Customer extends Model
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Builder;
 
 class Customer extends Model
 {
@@ -153,4 +155,25 @@ class Customer extends Model
           $this->balance += $amount;
           $this->save();
       }
+
+
+      //Añadido para historial de pagos del customer resource
+      // Relación con todos los pagos (directos y de órdenes)
+      // Reemplaza el método allPayments() con esto:
+public function allPayments()
+{
+    return $this->hasMany(Payment::class, 'customer_id');
 }
+
+// Y añade este método al modelo Customer
+protected static function booted()
+{
+    static::addGlobalScope('withOrderPayments', function (Builder $builder) {
+        // Esto asegura que siempre incluimos los pagos relacionados
+    });
+}
+      
+
+      
+}
+
