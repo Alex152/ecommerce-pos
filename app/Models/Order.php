@@ -88,6 +88,23 @@ class Order extends Model
         'total' => 'decimal:2'
     ];
 
+
+     // Boot method to auto-generate order number   
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($order) {
+            $order->order_number = 'ORD-' . strtoupper(uniqid()); // Ej: ORD-65F3A2B1
+            $order->subtotal = 0; // Valor inicial, se actualizará al añadir items.
+            $order->user_id = auth()->id(); // Asigna el usuario logueado
+        });
+
+        // Eliminar pagos asociados antes de eliminar la orden
+        static::deleting(function ($order) {
+            $order->payments()->delete(); // Elimina los pagos relacionados con la orden
+        });
+    }
+
     // Relaciones
     public function customer()
     {
@@ -108,6 +125,15 @@ class Order extends Model
     {
         return $this->morphMany(Payment::class, 'payable');
     }
+
+    //Relaciones añadidas por 3erC
+
+
+    public function discount()
+    {
+        return $this->belongsTo(Discount::class);
+    }
+
 
     // Scopes
     public function scopePending(Builder $query): Builder
@@ -130,11 +156,32 @@ class Order extends Model
         return $query->where('order_type', 'ecommerce');
     }
 
-    // Métodos
     public function recalculateTotals(): void
     {
-        $this->subtotal = $this->items->sum('subtotal');
-        $this->total = $this->subtotal - $this->discount + $this->tax + $this->shipping;
+        // Resetear y recargar relaciones
+        $this->unsetRelation('items');
+        $this->load(['items.tax']);
+    
+        $this->subtotal = $this->items->sum(function ($item) {
+            return $item->quantity * $item->unit_price;
+        });
+    
+        // Cálculo de taxes seguro
+        $totalTax = $this->items->sum(function ($item) {
+            if ($item->relationLoaded('tax') && $item->tax instanceof \Illuminate\Database\Eloquent\Collection) {
+                return $item->tax->sum('pivot.amount');
+            }
+            return 0;
+        });
+    
+        $this->total = max(0, 
+            $this->subtotal 
+            - $this->items->sum('discount') 
+            + $totalTax
+            + $this->shipping
+        );
+    
         $this->save();
     }
+
 }

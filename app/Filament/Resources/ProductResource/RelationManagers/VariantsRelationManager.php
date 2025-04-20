@@ -118,6 +118,11 @@ class VariantsRelationManager extends RelationManager
 
     protected function getTableQuery(): Builder
     {
-        return parent::getTableQuery()->orderBy('name');
-    }
+        // Sin verificar que exista datos 
+        //return parent::getTableQuery()->orderBy('name');
+
+        //Primero verifica existencia de datos para evitar error
+        return ProductVariant::where('product_id', $this->getOwnerRecord()->id)
+                         ->orderBy('name');
+        }
 }

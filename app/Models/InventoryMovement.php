@@ -78,4 +78,21 @@ class InventoryMovement extends Model
     {
         return $this->morphTo();
     }
+
+        // En app/Models/InventoryMovement.php
+
+    protected static function booted()
+    {
+        static::creating(function ($movement) {
+            if (!$movement->product_id && $movement->inventory) {
+                $movement->product_id = $movement->inventory->product_id;
+            }
+            if (!$movement->warehouse_id && $movement->inventory) {
+                $movement->warehouse_id = $movement->inventory->warehouse_id;
+            }
+            if (!$movement->user_id) {
+                $movement->user_id = auth()->id();
+            }
+        });
+    }
 }

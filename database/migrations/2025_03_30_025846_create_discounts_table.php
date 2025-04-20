@@ -70,7 +70,7 @@ return new class extends Migration
         });
         
         // Tabla pivote para categorías
-        Schema::create('discount_category', function (Blueprint $table) {
+        Schema::create('category_discount', function (Blueprint $table) {       //Antes discunt_ategory
             $table->foreignId('discount_id')->constrained()->cascadeOnDelete();
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->decimal('discount_value', 10, 2)->nullable();
@@ -80,7 +80,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('discount_category');
+        Schema::dropIfExists('category_discount');
         Schema::dropIfExists('discount_product');
         Schema::dropIfExists('discounts');
     }

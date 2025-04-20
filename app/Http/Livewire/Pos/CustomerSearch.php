@@ -1,5 +1,5 @@
 <?php
-
+// No hay columna DNI
 namespace App\Http\Livewire\Pos;
 
 use Livewire\Component;

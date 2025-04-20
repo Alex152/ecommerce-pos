@@ -37,7 +37,7 @@ return new class extends Migration
             $table->foreignId('customer_id')->nullable()->constrained()->nullOnDelete();
             $table->enum('order_type', ['ecommerce', 'pos'])->default('pos');
             $table->enum('status', ['pending', 'processing', 'completed', 'cancelled', 'refunded'])->default('pending');
-            $table->decimal('subtotal', 10, 2);
+            $table->decimal('subtotal', 10, 2); //->nullable(); // añadir , se hix¿zo desde phpmyadmin
             $table->decimal('tax', 10, 2)->default(0);
             $table->decimal('discount', 10, 2)->default(0);
             $table->decimal('shipping', 10, 2)->default(0);

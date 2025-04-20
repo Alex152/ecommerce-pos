@@ -28,7 +28,9 @@ return new class extends Migration
             $table->foreignId('parent_id')->nullable()->constrained('categories');
             $table->integer('position')->default(0);
             $table->boolean('is_visible')->default(true);
-            $table->string('meta_title')->nullable();
+            //Se cambio meta_keywords de string a json
+            //$table->string('meta_title')->nullable();
+            $table->json('meta_keywords')->nullable();
             $table->text('meta_description')->nullable();
             $table->string('meta_keywords')->nullable();
             $table->timestamps();

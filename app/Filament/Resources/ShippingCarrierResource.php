@@ -12,12 +12,13 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-
+//Aun no mejorado con el 3er chat
 class ShippingCarrierResource extends Resource
 {
     protected static ?string $model = ShippingCarrier::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-truck';
+    protected static ?string $navigationGroup = 'Logística';
 
     public static function form(Form $form): Form
     {

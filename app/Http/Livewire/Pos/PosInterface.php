@@ -25,7 +25,20 @@ class PosInterface extends Component
 
     //protected $layout = 'layouts.app'; // Usará el layout de Jetstream
     public $errorMessage = ''; //Variable para eeror validad para mostrar en navegador o dentro del sistema
+///Para busqueda de customers
+    public $customerSearch = '';
 
+    public function updatedCustomerSearch($value)
+    {
+        $this->customer_id = null; // Resetear el ID seleccionado al buscar
+    }
+
+    public function selectCustomer($customerId)
+    {
+        $this->customer_id = $customerId;
+        $this->customerSearch = Customer::find($customerId)->name;
+    }
+//////////
     public function addToCart($barcode)         
     {   
         //$this->reset('errorMessage');  Para eventos con navegador 
@@ -79,9 +92,14 @@ class PosInterface extends Component
     public function completeSale()
     {
         DB::transaction(function () {
+
+            // Para invoice_number , se puede cambiar el formato segun se requiera 
+            $invoiceNumber = 'VEN-' . now()->format('YmdHis') . '-' . rand(100, 999);
+
             $sale = Sale::create([
                 'cashier_id' => auth()->id(),
                 'customer_id' => $this->customer_id,
+                'invoice_number' => $invoiceNumber, //  Agregado
                 'total_amount' => $this->total,
                 'tax_amount' => $this->tax,
                 'payment_method' => $this->payment_method,
@@ -118,10 +136,24 @@ class PosInterface extends Component
 
     public function render()
     {
+
+        //Busqueda de customers
+        $customersQuery = Customer::query();
+    
+        if ($this->customerSearch) {
+            $customersQuery->where('name', 'like', '%'.$this->customerSearch.'%');
+        }
+        
+        $selectedCustomerName = $this->customer_id 
+            ? Customer::find($this->customer_id)->name 
+            : null;
+        //////
         return view('livewire.pos.pos-interface', [
 
             'products' => Product::all(), 
-            'customers' => Customer::all()
+            //'customers' => Customer::all()
+            'filteredCustomers' => $customersQuery->limit(10)->get(),
+            'selectedCustomerName' => $selectedCustomerName
         ]);
     }
 }

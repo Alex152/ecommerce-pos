@@ -19,6 +19,8 @@ class TaxResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-receipt-percent';
 
+    protected static ?string $navigationGroup = 'Ventas';
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -27,6 +29,8 @@ class TaxResource extends Resource
             Forms\Components\TextInput::make('rate')
                 ->numeric()
                 ->suffix('%')
+                ->minValue(0)
+                ->maxValue(100)
                 ->required(),
             Forms\Components\Toggle::make('is_active')
                 ->default(true),
@@ -38,7 +42,8 @@ class TaxResource extends Resource
         return $table->columns([
             Tables\Columns\TextColumn::make('name'),
             Tables\Columns\TextColumn::make('rate')
-                ->suffix('%'),
+                ->suffix('%')
+                ->sortable(),
             Tables\Columns\BooleanColumn::make('is_active'),
         ]);
     }

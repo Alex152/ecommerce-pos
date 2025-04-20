@@ -65,6 +65,12 @@ class Product extends Model
     use Illuminate\Database\Eloquent\Builder;
     use Spatie\MediaLibrary\HasMedia;
     use Spatie\MediaLibrary\InteractsWithMedia;
+
+    
+    use Spatie\Image\Image;
+    use Spatie\Image\Enums\Fit;
+    use Spatie\Image\Enums\AlignPosition;
+    use Spatie\MediaLibrary\MediaCollections\Models\Media;
     
     class Product extends Model implements HasMedia
     {
@@ -137,7 +143,7 @@ class Product extends Model
         {
             return $query->where('is_featured', true);
         }
-    
+    /*
         // Media
         public function registerMediaCollections(): void
         {
@@ -148,4 +154,83 @@ class Product extends Model
             $this->addMediaCollection('gallery')
                 ->useDisk('public');
         }
+|    */
+
+public function registerMediaCollections(): void
+{
+    /*
+    $this
+        ->addMediaCollection('main_image')
+        ->singleFile()
+        ->useDisk('media')
+        ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']) // Método actualizado
+        ->registerMediaConversions(function (Media $media) {
+            $this->addMediaConversion('thumb')
+                ->width(300)
+                ->height(300)
+                ->quality(80);
+        });
+
+    $this
+        ->addMediaCollection('gallery')
+        ->useDisk('media')
+        ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']); // Método actualizado*/
+    
+    $this->addMediaCollection('gallery')
+        ->useDisk('media')
+        ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
+        //->withResponsiveImages();   //Para que genere varios tamaños y resoluciones
+        //->maxNumberOfFiles(5);
+
+    $this
+        ->addMediaCollection('main_image')
+        ->singleFile()
+        ->useDisk('media')
+        ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
+        ->registerMediaConversions(function (Media $media) {
+            $this->addMediaConversion('thumb')
+                ->width(300)
+                ->height(300)
+                ->quality(80);
+                
+            /*$this->addMediaConversion('preview')
+                ->width(800)
+                ->height(800)
+                ->quality(85);*/
+        });
+}
+
+public function getMainImageUrlAttribute()
+{
+    return $this->getFirstMediaUrl('main_image', 'thumb') ?: 
+           asset('images/default-product.jpg'); // Fallback opcional
+}
+
+public function getGalleryUrlsAttribute()
+{
+    return $this->getMedia('gallery')->map(function ($media) {
+        return [
+            'url' => $media->getUrl(),
+            'thumb' => $media->getUrl('thumb'), // Si tienes conversión thumb
+            'alt' => $this->name
+        ];
+    });
+}
+        //Para DiscountResource/ProductRelationManager
+
+        public function discounts(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+        {
+            return $this->belongsToMany(Discount::class)
+                ->withPivot('discount_value');
+        }
+
+        /*
+        en caso que se quiera que se puestre las etiquetas de los selects 
+        globalmente con el name del producto
+
+        public function getFilamentRecordTitle(): string
+        {
+            return $this->name;
+        }
+        */
     }

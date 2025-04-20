@@ -4,11 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class Sale extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'cashier_id',
@@ -46,9 +46,28 @@ class Sale extends Model
         return $this->hasMany(SaleItem::class);
     }
 
+    //Para que se borren lo pagos asociados
+    public function payments()
+    {
+        return $this->morphMany(\App\Models\Payment::class, 'payable');
+    }
+
+
     // Métodos
     public function calculateTotal(): float
     {
         return $this->items->sum('subtotal');
     }
+
+    protected static function boot()
+{
+    parent::boot();
+
+    // Eliminar pagos asociados antes de eliminar la venta
+    static::deleting(function ($sale) {
+        $sale->payments()->delete(); // Elimina los pagos relacionados con la venta
+    });
+}
+
+
 }
