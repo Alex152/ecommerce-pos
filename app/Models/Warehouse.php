@@ -56,4 +56,10 @@ class Warehouse extends Model
     {
         return $this->hasMany(InventoryMovement::class);
     }
+    /// Para stock_management de POS
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
 }

@@ -27,9 +27,12 @@ class CategoryResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->required(),
+                    ->required()
+                    ->reactive()
+                    ->afterStateUpdated(fn ($state, callable $set) => $set('slug', Str::slug($state))),
                 Forms\Components\TextInput::make('slug')
-                    ->required(),
+                    ->required()
+                    ->unique(ignoreRecord: true),
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
                 Forms\Components\Select::make('parent_id')

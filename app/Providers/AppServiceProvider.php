@@ -42,5 +42,7 @@ class AppServiceProvider extends ServiceProvider
         Livewire::component('inventory-alert', \App\Http\Livewire\InventoryAlert::class);
         Livewire::component('user-security', \App\Http\Livewire\UserSecurity::class);
         Livewire::component('pos.stock-management', \App\Http\Livewire\Pos\StockManagement::class);
+        Livewire::component('pos.pos-header', \App\Http\Livewire\Pos\PosHeader::class); 
+        Livewire::component('pos.notification-handler', \App\Http\Livewire\Pos\NotificationHandler ::class); 
     }
 }

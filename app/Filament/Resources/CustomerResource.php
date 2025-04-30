@@ -103,12 +103,13 @@ class CustomerResource extends Resource
                     ->boolean(),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('history')
+                /*Tables\Actions\Action::make('history')
                     ->icon('heroicon-o-clipboard-document-list')
                     ->url(fn (Customer $record) => OrderResource::getUrl('index', [
                         'tableFilters[customer_id][value]' => $record->id
-                    ])),
+                    ])),*/     //Histial no dirije bien
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

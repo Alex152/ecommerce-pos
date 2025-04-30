@@ -104,6 +104,7 @@ class SaleResource extends Resource
     {
         return [
             //
+            RelationManagers\SaleItemsRelationManager::class,
         ];
     }
 

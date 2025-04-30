@@ -179,8 +179,8 @@ class Payment extends Model
 
     public function order(): BelongsTo
     {
-        return $this->belongsTo(Order::class, 'payable_id')
-            ->where('payable_type', Order::class);
+        return $this->belongsTo(Order::class, 'payable_id');
+            //->where('payable_type', Order::class);   //Esta mal porque Order no tiene campo payable_type
     }
 
     //Añadido para ver orden asociado a PaymentsRelationManager del CustomResource

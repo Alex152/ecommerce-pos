@@ -11,6 +11,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use App\Models\Order;
 
+use Filament\Tables\Filters\SelectFilter;
+
 class PaymentResource extends Resource
 {
     protected static ?string $model = Payment::class;
@@ -61,6 +63,22 @@ class PaymentResource extends Resource
                 Tables\Columns\TextColumn::make('payable.order_number')
                     ->label('Orden'),
                     //->sortable(),
+                /* //En caso de que tambien s ealmacena payments d esales aqui
+                Tables\Columns\TextColumn::make('payable_label')
+                    ->label('Relacionado con')
+                    ->getStateUsing(function ($record) {
+                        if ($record->payable_type === \App\Models\Order::class) {
+                            return '' . optional($record->payable)->order_number;
+                        }
+
+                        if ($record->payable_type === \App\Models\Sale::class) {
+                            return '' . optional($record->payable)->invoice_number;
+                        }
+
+                        return 'Otro';
+                    }),
+                    */
+
                 Tables\Columns\TextColumn::make('payment_method')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -81,7 +99,21 @@ class PaymentResource extends Resource
                 Tables\Columns\TextColumn::make('payment_date')
                     ->date(),
             ])
-            ->filters([])
+            ->filters([
+                /* //En caso de poner payments de sales aqui
+                SelectFilter::make('payable_type')
+                    ->label('Filtrar por tipo')
+                    ->options([
+                        Order::class => 'Solo Orders',
+                        \App\Models\Sale::class => 'Solo Sales',
+                    ])
+                    ->query(function ($query, array $data) {
+                        if (!empty($data['value'])) {
+                            $query->where('payable_type', $data['value']);
+                        }
+                    }),
+                */
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])

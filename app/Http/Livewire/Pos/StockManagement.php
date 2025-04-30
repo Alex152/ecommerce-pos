@@ -65,7 +65,7 @@ class StockManagement extends Component
 
     public function render()
     {
-        return view('livewire.stock-management', [
+        return view('livewire.pos.stock-management', [
             'products' => \App\Models\Product::active()->get(),
             'warehouses' => Warehouse::active()->get(),
             'movementTypes' => [

@@ -10,116 +10,263 @@ use App\Models\SaleItem;
 use App\Models\Payment;
 use Illuminate\Support\Facades\DB;
 
+use Livewire\WithPagination;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+
 class PosInterface extends Component
 {
+    use WithPagination;
+
+    public $search = '';
+    public $barcodeInput = '';
+    public $customerSearch = '';
+    public $selectedCustomer = null;
+    public $selectedCustomerName = '';
+    public $payment_method = 'cash';
+    public $cash_received = 0;
+    
     public $cart = [];
     public $subtotal = 0;
     public $tax = 0;
     public $total = 0;
-    public $customer_id;
-    public $payment_method = 'cash';
-    public $cash_received = 0;
     public $change = 0;
 
-    protected $listeners = ['productScanned' => 'addToCart'];
+    protected $listeners = ['barcodeScanned' => 'handleBarcode'];
 
-    //protected $layout = 'layouts.app'; // Usará el layout de Jetstream
-    public $errorMessage = ''; //Variable para eeror validad para mostrar en navegador o dentro del sistema
-///Para busqueda de customers
-    public $customerSearch = '';
-
-    public function updatedCustomerSearch($value)
+    public function handleBarcode($barcode)
     {
-        $this->customer_id = null; // Resetear el ID seleccionado al buscar
+        $this->barcodeInput = $barcode;
+        $this->searchByBarcode();
     }
 
-    public function selectCustomer($customerId)
+    public function searchByBarcode()
     {
-        $this->customer_id = $customerId;
-        $this->customerSearch = Customer::find($customerId)->name;
-    }
-//////////
-    public function addToCart($barcode)         
-    {   
-        //$this->reset('errorMessage');  Para eventos con navegador 
-        $this->errorMessage = ''; // Reiniciar mensaje de error
-        $product = Product::where('barcode', $barcode)->first();
-        
-        if (!$product) {
-            //$this->dispatch('showAlert', message: 'Product not found', type: 'error'); // Mal planteado la Syntaxis
-            //$this->dispatch('show-alert', ['message' => 'Product not found', 'type' => 'error']);   // Para alerta con navegador correcta
-            $this->errorMessage = '⚠️ Producto no encontrado';  // Alerta interna en el sistema 
-            return;
-        }
+        if (!empty($this->barcodeInput)) {
+            $product = Product::where('barcode', $this->barcodeInput)->first();
+            
+            if ($product) {
+                $this->addToCart($product->id);
+                $this->barcodeInput = '';
+                /*
+                $this->dispatch('notify', [
+                    'type' => 'success',
+                    'message' => $product->name.' added to cart'
+                ]);*/
 
-        $found = false;
-        foreach ($this->cart as &$item) {
-            if ($item['id'] == $product->id) {
-                $item['quantity'] += 1;
-                $found = true;
-                break;
+                $this->dispatch('showNotification', 
+                    type: 'success', 
+                    message: ' añadido al carrito'
+                );
+            } else {
+                /*$this->dispatch('notify', [
+                    'type' => 'error',
+                    'message' => 'Product not found with barcode: '.$this->barcodeInput
+                ]);*/
+                $this->dispatch('showNotification', 
+                    type: 'error', 
+                    message: ' Producto no encontrado con barcode: '.$this->barcodeInput
+                );
             }
         }
+    }
 
-        if (!$found) {
+    public function searchCustomer()
+    {
+        // La búsqueda se hace automáticamente con wire:model.live
+    }
+
+    public function addToCart($productId)
+    {
+        $product = Product::with('media')->findOrFail($productId);
+
+        // Verificar stock antes de añadir
+        if ($product->manage_stock && $product->stock_quantity <= 0) {
+            $this->dispatch('showNotification',
+                type: 'error',
+                message: 'Sin stock disponible para '.$product->name
+            );
+            return;
+        }   
+        ///////////////
+
+        $existingIndex = collect($this->cart)->search(function ($item) use ($productId) {
+            return $item['id'] == $productId;
+        });
+        
+        if ($existingIndex !== false) {
+
+            // Verificar si al incrementar excede stock
+            if ($product->manage_stock && $this->cart[$existingIndex]['quantity'] >= $product->stock_quantity) {
+                $this->dispatch('showNotification',
+                    type: 'error',
+                    message: 'Stock máximo alcanzado para '.$product->name
+                );
+                return;
+            }
+            //////////////
+            $this->cart[$existingIndex]['quantity']++;
+        } else {
             $this->cart[] = [
                 'id' => $product->id,
                 'name' => $product->name,
                 'price' => $product->price,
                 'quantity' => 1,
-                'barcode' => $product->barcode
+                'image' => $product->getFirstMediaUrl('main_image', 'thumb')
             ];
         }
-
+        
         $this->calculateTotals();
+        $this->dispatch('showNotification', 
+            type: 'success', 
+            message: $product->name.' añadido al carrito'
+        );
+        
+        
     }
+///New Countable
+    public function incrementQuantity($index)
+    {
+        if (isset($this->cart[$index])) {
+
+            // Validacion stock
+            $product = Product::find($this->cart[$index]['id']);
+            if ($product) {
+                // Verificar si excede stock
+                if ($product->manage_stock && $this->cart[$index]['quantity'] >= $product->stock_quantity) {
+                    $this->dispatch('showNotification',
+                        type: 'error',
+                        message: 'Stock máximo alcanzado para '.$product->name
+                    );
+                    return;
+                }
+            }
+            /////
+
+            $this->cart[$index]['quantity']++;
+            $this->calculateTotals();
+        }
+    }
+
+    public function decrementQuantity($index)
+    {
+        if (isset($this->cart[$index]) && $this->cart[$index]['quantity'] > 1) {
+            $this->cart[$index]['quantity']--;
+            $this->calculateTotals();
+        }
+    }
+
+    public function showSales()
+    {
+        return redirect()->route('filament.admin.resources.sales.index');
+    }
+
+    public function showCustomers()
+    {
+        return redirect()->route('filament.admin.resources.customers.index');
+    }
+
+    /////
 
     public function removeFromCart($index)
     {
-        unset($this->cart[$index]);
-        $this->cart = array_values($this->cart);
-        $this->calculateTotals();
+        if (isset($this->cart[$index])) {
+            $removedItem = $this->cart[$index];
+            unset($this->cart[$index]);
+            $this->cart = array_values($this->cart);
+            
+            $this->calculateTotals();
+            /*$this->dispatch('notify', [
+                'type' => 'warning',
+                'message' => $removedItem['name'].' removed from cart'
+            ]);*/
+            $this->dispatch('showNotification', 
+                type: 'success', 
+                message:  $removedItem['name'].' retirado del carrito'
+            );
+        }
     }
 
-    public function calculateTotals()
+    public function selectCustomer($customerId)
     {
-        $this->subtotal = array_reduce($this->cart, fn($carry, $item) => $carry + ($item['price'] * $item['quantity']), 0);
-        $this->tax = $this->subtotal * 0.10; // 10% tax
-        $this->total = $this->subtotal + $this->tax;
-        $this->change = $this->cash_received - $this->total;
+        $customer = Customer::find($customerId);
+        if ($customer) {
+            $this->selectedCustomer = $customerId;
+            $this->selectedCustomerName = $customer->name;
+            $this->customerSearch = '';
+            /*$this->dispatch('notify', [
+                'type' => 'success',
+                'message' => 'Customer selected: '.$customer->name
+            ]);
+            */
+            $this->dispatch('showNotification', 
+                type: 'success', 
+                message: 'Customer selected: '.$customer->name
+            );
+            
+        }
+    }
+
+    public function clearCustomer()
+    {
+        $this->selectedCustomer = null;
+        $this->selectedCustomerName = '';
+    }
+
+    public function updatedCashReceived()
+    {
+        $this->change = max(0, $this->cash_received - $this->total);
     }
 
     public function completeSale()
     {
+
+        //Validacion stock
+        foreach ($this->cart as $item) {
+            $product = Product::find($item['id']);
+            if ($product && $product->manage_stock && $item['quantity'] > $product->stock_quantity) {
+                $this->dispatch('showNotification',
+                    type: 'error',
+                    message: 'Stock insuficiente para completar la venta de '.$product->name
+                );
+                return;
+            }
+        }
+
+        ////
         DB::transaction(function () {
-
-            // Para invoice_number , se puede cambiar el formato segun se requiera 
             $invoiceNumber = 'VEN-' . now()->format('YmdHis') . '-' . rand(100, 999);
-
+            
             $sale = Sale::create([
+                'invoice_number' => $invoiceNumber,
+                'customer_id' => $this->selectedCustomer,
                 'cashier_id' => auth()->id(),
-                'customer_id' => $this->customer_id,
-                'invoice_number' => $invoiceNumber, //  Agregado
-                'total_amount' => $this->total,
-                'tax_amount' => $this->tax,
+                'user_id' => auth()->id(),
                 'payment_method' => $this->payment_method,
                 'payment_status' => 'paid',
-                'status' => 'completed'
+                'subtotal' => $this->subtotal,
+                'tax_amount' => $this->tax,  // Antes tax
+                'total_amount' => $this->total, //Antes total
+                'cash_received' => $this->cash_received,
+                'change' => $this->change,
+                'status' => 'completed',
             ]);
-
+            
             foreach ($this->cart as $item) {
                 SaleItem::create([
                     'sale_id' => $sale->id,
                     'product_id' => $item['id'],
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['price'],
-                    'subtotal' => $item['price'] * $item['quantity']
+                    'subtotal' => $item['price'] * $item['quantity'],  // Antes total_price
                 ]);
-
-                // Update inventory
-                Product::where('id', $item['id'])->decrement('stock_quantity', $item['quantity']);
+                
+                $product = Product::find($item['id']);
+                if ($product && $product->manage_stock) {
+                    $product->decrement('stock_quantity', $item['quantity']);
+                }
             }
-
+            /* //En el caso de querer que un POS sale cree un payment
             Payment::create([
                 'payable_id' => $sale->id,
                 'payable_type' => Sale::class,
@@ -127,33 +274,67 @@ class PosInterface extends Component
                 'payment_method' => $this->payment_method,
                 'status' => 'completed'
             ]);
+            */
         });
+        
+        /*$this->dispatch('notify', [
+            'type' => 'success',
+            'message' => 'Sale completed successfully!'// Invoice: '.$invoiceNumber
+        ]);*/
+        $this->dispatch('showNotification', 
+                type: 'success', 
+                message: 'Venta completada!: '
+            );
+        
+        $this->resetCart();
+    }
 
-        $this->reset();
-        //$this->emit('saleCompleted');  // Ya no existe en versiones recientes de liveire
-        $this->dispatch('saleCompleted');
+    private function calculateTotals()
+    {
+        $this->subtotal = collect($this->cart)->sum(function ($item) {
+            return $item['price'] * $item['quantity'];
+        });
+        
+        $this->tax = $this->subtotal * 0.10;
+        $this->total = $this->subtotal + $this->tax;
+        $this->change = max(0, $this->cash_received - $this->total);
+    }
+
+    private function resetCart()
+    {
+        $this->cart = [];
+        $this->selectedCustomer = null;
+        $this->selectedCustomerName = '';
+        $this->payment_method = 'cash';
+        $this->cash_received = 0;
+        $this->calculateTotals();
     }
 
     public function render()
     {
+        $products = Product::query()
+            ->with(['category', 'media'])
+            ->where('pos_visible', true)
+            ->when($this->search, function($query) {
+                $query->where(function($q) {
+                    $q->where('name', 'like', '%'.$this->search.'%')
+                      ->orWhere('sku', 'like', '%'.$this->search.'%')
+                      ->orWhere('barcode', 'like', '%'.$this->search.'%');
+                });
+            })
+            ->paginate(12);
 
-        //Busqueda de customers
-        $customersQuery = Customer::query();
-    
-        if ($this->customerSearch) {
-            $customersQuery->where('name', 'like', '%'.$this->customerSearch.'%');
-        }
-        
-        $selectedCustomerName = $this->customer_id 
-            ? Customer::find($this->customer_id)->name 
-            : null;
-        //////
+        $filteredCustomers = Customer::when($this->customerSearch, function($query) {
+                $query->where('name', 'like', '%'.$this->customerSearch.'%')
+                      ->orWhere('email', 'like', '%'.$this->customerSearch.'%')
+                      ->orWhere('phone', 'like', '%'.$this->customerSearch.'%');
+            })
+            ->limit(5)
+            ->get();
+
         return view('livewire.pos.pos-interface', [
-
-            'products' => Product::all(), 
-            //'customers' => Customer::all()
-            'filteredCustomers' => $customersQuery->limit(10)->get(),
-            'selectedCustomerName' => $selectedCustomerName
+            'products' => $products,
+            'filteredCustomers' => $filteredCustomers,
         ]);
     }
 }

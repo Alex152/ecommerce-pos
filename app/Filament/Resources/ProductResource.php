@@ -41,6 +41,9 @@ class ProductResource extends Resource
                         Forms\Components\TextInput::make('slug')
                             ->required()
                             ->unique(ignoreRecord: true),
+                        
+                        Forms\Components\TextInput::make('barcode')
+                            ->unique(ignoreRecord: true),
 
                         Forms\Components\TextInput::make('sku')
                             ->unique(ignoreRecord: true)
@@ -67,7 +70,7 @@ class ProductResource extends Resource
                             ->numeric()
                             ->default(0),
                         Forms\Components\Toggle::make('has_variants')
-                            ->live()
+                            //->live()
                             ->label('Tiene Variantes'),
                     ])->columns(3),
 
@@ -83,7 +86,7 @@ class ProductResource extends Resource
                             ->label('Destacado'),
                     ])->columns(3),
 
-                
+                /*   Form variantes inecesario , ya hay relation manager para variantes
                     Forms\Components\Section::make('Variantes')
                     ->schema([
                         Forms\Components\Repeater::make('variants')
@@ -99,7 +102,7 @@ class ProductResource extends Resource
                                     ->default(0),
                             ])
                             //->columnSpanFull(),
-                    ])->visible(fn ($get) => $get('has_variants')),
+                    ])->visible(fn ($get) => $get('has_variants')),*/
 
                 Forms\Components\Section::make('SEO')
                     ->schema([
@@ -254,11 +257,13 @@ class ProductResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                /*
                 Tables\Actions\Action::make('inventory')
                     ->icon('heroicon-o-archive-box')
                     ->url(fn (Product $record) => InventoryResource::getUrl('index', [
                         'tableFilters[product_id][value]' => $record->id
-                    ])),
+                    ])),*/
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
