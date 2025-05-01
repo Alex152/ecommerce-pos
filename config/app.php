@@ -190,7 +190,9 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
-    ])->toArray(),
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Cart' => Gloudemans\Shoppingcart\Facades\Cart::class,
+    ])->toArray(),
+        //'Excel' => Maatwebsite\Excel\Facades\Excel::class,  //ANtes ahi 
 
 ];

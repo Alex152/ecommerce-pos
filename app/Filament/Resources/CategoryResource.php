@@ -13,6 +13,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+
 //Ya mejorado 3er Chat
 class CategoryResource extends Resource
 {
@@ -44,6 +46,31 @@ class CategoryResource extends Resource
                     ->default(0),
                 Forms\Components\Toggle::make('is_visible')
                     ->default(true),
+
+                    Forms\Components\Section::make('Imagen de Categoría')
+                    ->schema([
+                        SpatieMediaLibraryFileUpload::make('category_image')
+                            ->collection('category_image')
+                            ->label('Imagen Principal')
+                            ->disk('media')
+                            ->image()
+                            ->imageEditor()
+                            ->imageEditorAspectRatios([
+                                '1:1',
+                                '4:3',
+                                '16:9',
+                            ])
+                            ->imageResizeMode('cover')
+                            ->imageCropAspectRatio('1:1')
+                            ->openable()
+                            ->downloadable()
+                            ->maxSize(2048)
+                            ->panelLayout('integrated')
+                            ->columnSpanFull()
+                            ->visibility('public')
+                            ->conversion('thumb'),
+                    ])->collapsible(),
+
                 Forms\Components\TextInput::make('meta_title'),
                 Forms\Components\Textarea::make('meta_description')
                     ->columnSpanFull(),
@@ -55,6 +82,13 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('category_image') // Cambiado de 'image_url' a 'category_image'
+                    ->label('Imagen')
+                    ->getStateUsing(function ($record) {
+                        return $record->getFirstMediaUrl('category_image', 'thumb');
+                    })
+                    ->size(50)
+                    ->defaultImageUrl(asset('images/default-category.png')),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('parent.name')
