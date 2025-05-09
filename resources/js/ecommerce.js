@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ease: "none"
         });
     });
-    
+    /*
     // Inicializar Drift en todas las imágenes con zoom
     document.querySelectorAll('[data-zoom]').forEach(img => {
         new Drift(img, {
@@ -46,4 +46,5 @@ document.addEventListener('DOMContentLoaded', function() {
             inlinePane: false
         });
     });
+    */
 });

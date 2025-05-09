@@ -62,6 +62,25 @@ class Category extends Model implements HasMedia
         return $this->hasMany(Category::class, 'parent_id');
     }
 
+    //Para shop page
+    // Category.php
+    public function childrenRecursive()
+    {
+        return $this->children()->with('childrenRecursive');
+    }
+
+    public function allCategoryIds()
+    {
+        $ids = [$this->id];
+
+        foreach ($this->children as $child) {
+            $ids = array_merge($ids, $child->allCategoryIds());
+        }
+
+        return $ids;
+    }
+
+
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
@@ -75,7 +94,7 @@ class Category extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('category_images')
+        $this->addMediaCollection('category_image')  //Antes _images
             ->useDisk('public')
             ->singleFile();
     }

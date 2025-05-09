@@ -238,4 +238,26 @@ class OrderResource extends Resource
             'edit' => Pages\EditOrder::route('/{record}/edit'),
         ];
     }
+
+    //Alerts
+
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getModel()::where('status', 'pending')->count();
+        return $count > 0 ? (string) $count : null;
+    }
+    
+    public static function getNavigationBadgeColor(): string | array | null
+    {
+        $count = static::getModel()::where('status', 'pending')->count();
+    
+        return $count > 0
+            ? ($count > 10 ? 'danger' : 'warning')
+            : null;
+    }
+    
+
+
+    
+
 }

@@ -191,7 +191,9 @@ return [
         // 'Example' => App\Facades\Example::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-        'Cart' => Gloudemans\Shoppingcart\Facades\Cart::class,
+        //'Cart' => Gloudemans\Shoppingcart\Facades\Cart::class,  // Mal no uso este
+        'Cart' => Hardevine\Shoppingcart\Facades\Cart::class,
+
     ])->toArray(),
         //'Excel' => Maatwebsite\Excel\Facades\Excel::class,  //ANtes ahi 
 

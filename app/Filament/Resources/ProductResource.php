@@ -57,6 +57,11 @@ class ProductResource extends Resource
                             ->default(true),
                     ])->columns(2),
 
+                Forms\Components\Section::make('Descriptions')
+                    ->schema([
+                        Forms\Components\TextInput::make('description'),
+                        Forms\Components\Textarea::make('short_description'),
+                    ]),
                 Forms\Components\Section::make('Precios y Stock')
                     ->schema([
                         Forms\Components\TextInput::make('price')

@@ -8,7 +8,9 @@
                     Inicio
                 </a>
             </li>
-            @foreach($product->categories as $category)
+            {{--
+            <!-- En caso que sea coleccion de muchos-->
+            @foreach($product->category as $category)
                 <li>
                     <div class="flex items-center">
                         <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
@@ -21,6 +23,55 @@
                     </div>
                 </li>
             @endforeach
+            
+           <!-- Cambiar a for each si se cambia a coleccion -->
+            @if($product->category)
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <a 
+                        href="{{ route('ecommerce.shop.category', $product->category->slug) }}" 
+                        class="text-indigo-600 hover:text-indigo-800 transition"
+                    >
+                        {{ $product->category->name }}
+                    </a>
+                </div>
+            </li>
+        @endif    --}}
+            
+        @if($product->category)
+            @php
+                $category = $product->category;
+                $ancestors = [];
+                while ($category->parent) {
+                    $ancestors[] = $category->parent;
+                    $category = $category->parent;
+                }
+                $ancestors = array_reverse($ancestors);
+            @endphp
+
+            @foreach($ancestors as $ancestor)
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <a href="{{ route('ecommerce.shop.category', $ancestor->slug) }}" class="text-indigo-600 hover:text-indigo-800 transition">
+                            {{ $ancestor->name }}
+                        </a>
+                    </div>
+                </li>
+            @endforeach
+
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <a href="{{ route('ecommerce.shop.category', $product->category->slug) }}" class="text-indigo-600 hover:text-indigo-800 transition">
+                        {{ $product->category->name }}
+                    </a>
+                </div>
+            </li>
+        @endif
+
+
             <li aria-current="page">
                 <div class="flex items-center">
                     <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
@@ -62,7 +113,7 @@
                     <div class="grid grid-cols-5 gap-3">
                         @foreach($product->media as $media)
                             <button 
-                                @click="selectImage('{{ $media->getUrl('large') }}')"
+                                wire:click="selectImage('{{ $media->getUrl('large') }}')"
                                 class="border rounded-lg overflow-hidden transition"
                                 :class="{ 'border-indigo-500 ring-2 ring-indigo-300': '{{ $media->getUrl('large') }}' === selectedImage }"
                             >
@@ -92,7 +143,7 @@
                     <span class="mx-2 text-gray-300">|</span>
                     <span class="text-sm text-green-600">
                         <i class="fas fa-check-circle mr-1"></i>
-                        {{ $product->stock > 0 ? 'En stock' : 'Agotado' }}
+                        {{ $product->stock_quantity > 0 ? 'En stock' : 'Agotado' }}
                     </span>
                 </div>
 
@@ -194,27 +245,27 @@
         </div>
 
         <!-- Tabs -->
-        <div class="mt-16">
+        <div class="mt-16" x-data="{ activeTab: 'description' }">
             <div class="border-b border-gray-200">
                 <nav class="-mb-px flex space-x-8">
                     <button
                         @click="activeTab = 'description'"
                         class="py-4 px-1 border-b-2 font-medium text-sm"
-                        :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'description', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'description' }"
+                        :class="activeTab === 'description' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                     >
                         Descripción
                     </button>
                     <button
                         @click="activeTab = 'specifications'"
                         class="py-4 px-1 border-b-2 font-medium text-sm"
-                        :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'specifications', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'specifications' }"
+                        :class="activeTab === 'specifications' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                     >
                         Especificaciones
                     </button>
                     <button
                         @click="activeTab = 'reviews'"
                         class="py-4 px-1 border-b-2 font-medium text-sm"
-                        :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'reviews', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'reviews' }"
+                        :class="activeTab === 'reviews' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                     >
                         Reseñas ({{ $product->reviews_count }})
                     </button>
@@ -223,11 +274,13 @@
 
             <!-- Tab Content -->
             <div class="py-8">
-                <div x-show="activeTab === 'description'" class="prose max-w-none">
+                <div x-show="activeTab === 'description'" class="prose max-w-none" x-cloak>
                     {!! $product->description !!}
                 </div>
 
-                <div x-show="activeTab === 'specifications'" class="space-y-4">
+                {{-- Especificaciones (puedes descomentar si usas esto) --}}
+                {{-- 
+                <div x-show="activeTab === 'specifications'" class="space-y-4" x-cloak>
                     <h3 class="text-lg font-medium text-gray-900">Especificaciones técnicas</h3>
                     <div class="bg-gray-50 rounded-lg p-6">
                         <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
@@ -240,8 +293,9 @@
                         </dl>
                     </div>
                 </div>
+                --}}
 
-                <div x-show="activeTab === 'reviews'" class="space-y-8">
+                <div x-show="activeTab === 'reviews'" class="space-y-8" x-cloak>
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-medium text-gray-900">Opiniones de clientes</h3>
                         <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
@@ -258,7 +312,7 @@
                                             <i class="fas fa-star{{ $i <= $review->rating ? '' : '-half-alt' }} text-yellow-400"></i>
                                         @endfor
                                     </div>
-                                    <h4 class="text-sm font-medium text-gray-900">{{ $review->user->name }}</h4>
+                                    <h4 class="text-sm font-medium text-gray-900">{{ $review->customer->name }}</h4>
                                     <span class="mx-2 text-gray-300">|</span>
                                     <span class="text-sm text-gray-500">{{ $review->created_at->format('d M Y') }}</span>
                                 </div>
@@ -275,6 +329,7 @@
                 </div>
             </div>
         </div>
+
 
         <!-- Related Products -->
         <div class="mt-16">

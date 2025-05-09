@@ -5,16 +5,16 @@
     <!-- Featured Categories -->
     <section class="py-12 bg-white">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-8">Nuestras Categorías</h2>
+            <h2 class="text-3xl font-bold text-center mb-8">Explora Nuestras Categorías</h2>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                 @foreach($categories as $category)
                 <a href="{{ route('ecommerce.shop.category', $category->slug) }}" 
-                   class="group relative overflow-hidden rounded-xl shadow-md h-64">
-                    <img src="{{ $category->getFirstMediaUrl('default', 'category_card') }}" 
-                         alt="{{ $category->name }}"
-                         class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                        <h3 class="text-white text-xl font-bold">{{ $category->name }}</h3>
+                class="group relative overflow-hidden rounded-xl shadow-md h-64 hover:shadow-lg transition duration-300">
+                    <img src="{{ $category->getFirstMediaUrl('category_image') }}" 
+                        alt="{{ $category->name }}"
+                        class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center group-hover:bg-opacity-50 transition">
+                        <h3 class="text-white text-xl font-bold px-4 text-center">{{ $category->name }}</h3>
                     </div>
                 </a>
                 @endforeach

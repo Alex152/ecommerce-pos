@@ -165,4 +165,18 @@ class User extends Authenticatable
     {
         return $this->sales()->whereDate('created_at', today())->sum('total');
     }
+
+
+    // app/Models/User.php
+
+    public function wishlist()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    // Método para verificar si un producto está en la wishlist
+    public function hasInWishlist($productId)
+    {
+        return $this->wishlist()->where('product_id', $productId)->exists();
+    }
 }

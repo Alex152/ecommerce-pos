@@ -11,6 +11,7 @@
     }"
     @mouseenter="hover = true" 
     @mouseleave="hover = false"
+    @click="window.location.href='{{ route('ecommerce.product.show', $product->slug) }}'" 
     class="relative bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl"
 >
     <!-- Badges -->
@@ -21,9 +22,10 @@
     @endif
 
     <!-- Product Image -->
-    <a href="{{ route('ecommerce.product.show', $product->slug) }}" class="block relative h-64 overflow-hidden">
+    <a href="#" class="block relative h-64 overflow-hidden">
         <img 
-            src="{{ $product->getFirstMediaUrl('default', 'product_card') }}" 
+            {{--src="{{ $product->getFirstMediaUrl('default', 'product_card') }}" --}}
+            src="{{ $product->main_image_url }}" 
             alt="{{ $product->name }}"
             class="w-full h-full object-cover transition-opacity duration-300"
             :class="{ 'opacity-100': !hover, 'opacity-90': hover }"
@@ -86,9 +88,10 @@
             </button>
         </div>
     </div>
-
+    
+    <template x-teleport="body">
     <!-- Quick View Modal -->
-    <x-modal wire:model.defer="showQuickView" maxWidth="4xl">
+    <x-modal wire:model.defer="showQuickView" maxWidth="4xl" class="z-[1000]">
         <div class="p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Product Gallery -->
@@ -165,4 +168,5 @@
             </div>
         </div>
     </x-modal>
+    </template>
 </div>

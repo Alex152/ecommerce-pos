@@ -36,8 +36,8 @@ class MiniCart extends Component
     public function removeItem($rowId)
     {
         Cart::remove($rowId);
-        $this->emit('cartUpdated');
-        $this->dispatchBrowserEvent('notify', [
+        $this->dispatch('cartUpdated');
+        $this->dispatch('notify', [
             'type' => 'success',
             'message' => 'Producto removido'
         ]);
@@ -45,15 +45,23 @@ class MiniCart extends Component
 
     public function updateQuantity($rowId, $quantity)
     {
-        Cart::update($rowId, $quantity); // Forma simplificada
-        $this->emit('cartUpdated');
+        //Cart::update($rowId, $quantity); // Forma simplificada
+        Cart::update($rowId, [
+            'quantity' => [
+                'relative' => false,
+                'value' => $quantity
+            ]
+        ]);
+        $this->dispatch('cartUpdated');
     }
     public function render()
     {
         return view('livewire.ecommerce.cart.mini-cart', [
-            'cartItems' => Cart::instance('default')->content(),
+            //'cartItems' => Cart::instance('default')->content(),
           //  'isEmpty' => Cart::instance('default')->count() == 0,
-            'subtotal' => Cart::instance('default')->subtotal()
+            //'subtotal' => Cart::instance('default')->subtotal()
+            'cartItems' => Cart::Content(),
+            'subtotal' => Cart::SubTotal()
         ]);
     }
 }

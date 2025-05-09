@@ -71,6 +71,8 @@ class Product extends Model
     use Spatie\Image\Enums\Fit;
     use Spatie\Image\Enums\AlignPosition;
     use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
+    use App\Models\Review; 
     
     class Product extends Model implements HasMedia
     {
@@ -178,7 +180,22 @@ public function registerMediaCollections(): void
     
     $this->addMediaCollection('gallery')
         ->useDisk('media')
-        ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
+        ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
+        //Conversion añadida 
+        ->registerMediaConversions(function (Media $media) {
+            $this->addMediaConversion('thumb')
+                ->width(300)
+                ->height(300)
+                ->quality(80)
+                ->format('webp') ;
+           
+            $this->addMediaConversion('large')
+                ->width(800)
+                ->height(800)
+                ->quality(90)
+                ->format('webp');
+            
+        });
         //->withResponsiveImages();   //Para que genere varios tamaños y resoluciones
         //->maxNumberOfFiles(5);
 
@@ -191,7 +208,14 @@ public function registerMediaCollections(): void
             $this->addMediaConversion('thumb')
                 ->width(300)
                 ->height(300)
-                ->quality(80);
+                ->quality(80)
+                ->format('webp') ;
+            //En caso que no se quiera usar eliminar large y eliminar parametro large del getUrl de Shows Product
+            $this->addMediaConversion('large')
+                ->width(800)
+                ->height(800)
+                ->quality(90)
+                ->format('webp') ;
                 
             /*$this->addMediaConversion('preview')
                 ->width(800)
@@ -233,4 +257,17 @@ public function getGalleryUrlsAttribute()
             return $this->name;
         }
         */
+
+        public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    // Para productos relacionados por categorias en show-products.blade
+
+    public function relatedProducts()
+{
+    return $this->hasMany(Product::class, 'category_id', 'category_id')->where('id', '!=', $this->id);
+}
+
     }

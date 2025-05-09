@@ -11,7 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+//use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
@@ -52,7 +52,7 @@ class CategoryResource extends Resource
                         SpatieMediaLibraryFileUpload::make('category_image')
                             ->collection('category_image')
                             ->label('Imagen Principal')
-                            ->disk('media')
+                            ->disk('public')   //  Antes media 
                             ->image()
                             ->imageEditor()
                             ->imageEditorAspectRatios([
@@ -61,7 +61,7 @@ class CategoryResource extends Resource
                                 '16:9',
                             ])
                             ->imageResizeMode('cover')
-                            ->imageCropAspectRatio('1:1')
+                            //->imageCropAspectRatio('1:1')
                             ->openable()
                             ->downloadable()
                             ->maxSize(2048)
@@ -74,7 +74,7 @@ class CategoryResource extends Resource
                 Forms\Components\TextInput::make('meta_title'),
                 Forms\Components\Textarea::make('meta_description')
                     ->columnSpanFull(),
-                Forms\Components\TagsInput::make('meta_keywords'),
+                //Forms\Components\TagsInput::make('meta_keywords'),  // Irrelevante para navegadores actuales
             ]);
     }
 

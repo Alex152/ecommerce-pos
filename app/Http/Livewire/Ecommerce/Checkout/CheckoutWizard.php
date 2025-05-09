@@ -36,7 +36,7 @@ class CheckoutWizard extends Component
 
     public function checkCart()
     {
-        if (\Cart::isEmpty()) {
+        if (\Cart::count() === 0) {
             return redirect()->route('ecommerce.cart');
         }
     }
@@ -115,10 +115,10 @@ class CheckoutWizard extends Component
         $order = Order::create([
             'user_id' => auth()->id(),
             'status' => 'pending',
-            'subtotal' => \Cart::getSubTotal(),
+            'subtotal' => \Cart::SubTotal(),
             'shipping' => $this->getShippingCost(),
             'tax' => 0, // Calculate tax based on location
-            'total' => \Cart::getTotal() + $this->getShippingCost(),
+            'total' => \Cart::Total() + $this->getShippingCost(),
             'shipping_method' => $this->shippingMethod,
             'payment_method' => $this->paymentMethod,
         ]);
@@ -131,12 +131,17 @@ class CheckoutWizard extends Component
         $order->billingAddress()->create($billingAddress);
         
         // Add order items
-        foreach (\Cart::getContent() as $item) {
+        foreach (\Cart::Content() as $item) {
             $order->items()->create([
                 'product_id' => $item->associatedModel->id,
                 'quantity' => $item->quantity,
                 'unit_price' => $item->price,
                 'total' => $item->price * $item->quantity,
+                'attributes' => [
+                    'product_slug' => $item->slug,
+                    'image_url' => $item->getFirstMediaUrl('main_image', 'thumb') // URL directa
+    ],
+
             ]);
         }
         

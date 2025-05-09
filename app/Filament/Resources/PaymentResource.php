@@ -44,9 +44,13 @@ class PaymentResource extends Resource
                 Forms\Components\TextInput::make('transaction_id'),
                 Forms\Components\Select::make('status')
                     ->options([
-                        'paid' => 'Pagado',
+                        /*'paid' => 'Pagado',
                         'pending' => 'Pendiente',
-                        'cancelled' => 'Cancelado',
+                        'cancelled' => 'Cancelado',*/
+                        'pending' => 'Pendiente',
+                        'completed' => 'Completado',
+                        'failed' => 'Fallido',
+                        'refunded' => 'Reembolsado',
                     ])
                     ->default('pending'),
                 Forms\Components\DatePicker::make('payment_date')
@@ -92,9 +96,14 @@ class PaymentResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'paid' => 'success',
+                        /*'paid' => 'success',
                         'cancelled' => 'danger',
-                        default => 'warning',
+                        default => 'warning',*/
+                        'completed' => 'success',
+                        'refunded' => 'info',
+                        'failed' => 'danger',
+                        'pending' => 'warning',
+                        default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('payment_date')
                     ->date(),
@@ -130,4 +139,28 @@ class PaymentResource extends Resource
             'edit' => Pages\EditPayment::route('/{record}/edit'),
         ];
     }
+
+    //Alerts
+
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getModel()::where('status', 'pending')->count();
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): string | array | null
+    {
+        $count = static::getModel()::where('status', 'pending')->count();
+
+        return $count > 0
+            ? ($count > 10 ? 'danger' : 'warning')
+            : null;
+    }
+/*  //Ejemplo de como contrar acceso con permisos
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->can('view-payments');
+    }
+*/
+
 }

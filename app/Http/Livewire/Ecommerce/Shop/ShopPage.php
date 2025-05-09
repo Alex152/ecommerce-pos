@@ -26,12 +26,40 @@ class ShopPage extends Component
     {
         $this->category = $category;
     }
-
+/*
     public function render()
     {
         $products = Product::query()
             ->when($this->search, fn($q) => $q->where('name', 'like', '%'.$this->search.'%'))
-            ->when($this->category, fn($q) => $q->whereHas('categories', fn($q) => $q->where('slug', $this->category)))
+            ->when($this->category, fn($q) => $q->whereHas('category', fn($q) => $q->where('slug', $this->category)))
+            ->with('media')
+            ->orderBy($this->getSortField(), $this->getSortDirection())
+            ->paginate(12);
+
+        return view('livewire.ecommerce.shop.shop-page', [
+            'products' => $products,
+            'categories' => Category::whereNull('parent_id')->with('children')->get()
+        ])->layout('layouts.ecommerce', [
+            'title' => 'Tienda',
+            'description' => 'Explora nuestros productos'
+        ]);
+    }
+*/
+    public function render()
+    {
+        $categoryIds = [];
+
+        if ($this->category) {
+            $category = Category::with('children')->where('slug', $this->category)->first();
+
+            if ($category) {
+                $categoryIds = $category->allCategoryIds();
+            }
+        }
+
+        $products = Product::query()
+            ->when($this->search, fn($q) => $q->where('name', 'like', '%'.$this->search.'%'))
+            ->when($categoryIds, fn($q) => $q->whereIn('category_id', $categoryIds))
             ->with('media')
             ->orderBy($this->getSortField(), $this->getSortDirection())
             ->paginate(12);

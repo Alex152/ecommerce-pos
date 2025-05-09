@@ -92,7 +92,8 @@ class Payment extends Model
         protected $casts = [
             'amount' => 'decimal:2',
             'payment_date' => 'date',
-            'is_approved' => 'boolean'
+            'is_approved' => 'boolean',
+            'status' => 'string', 
         ];
 
         protected $attributes = [

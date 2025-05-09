@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use Illuminate\Support\Facades\View;
+use Cart;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -63,7 +65,14 @@ class AppServiceProvider extends ServiceProvider
         Livewire::component('ecommerce.home.home-page', \App\Http\Livewire\Ecommerce\Home\HomePage::class);
         Livewire::component('ecommerce.home.hero-slider', \App\Http\Livewire\Ecommerce\Home\HeroSlider::class);
         Livewire::component('ecommerce.product.show-product', \App\Http\Livewire\Ecommerce\Product\ShowProduct::class);
+        Livewire::component('ecommerce.product.image-gallery', \App\Http\Livewire\Ecommerce\Product\ImageGallery::class);
         Livewire::component('ecommerce.checkout.checkout-wizard', \App\Http\Livewire\Ecommerce\CheckOut\CheckoutWizard::class);
         Livewire::component('ecommerce.checkout.success', \App\Http\Livewire\Ecommerce\CheckOut\Succes::class);
+
+        //Para carrito
+        View::composer('*', function ($view) {
+            $view->with('cartCount', Cart::count());
+        });
+        
     }
 }

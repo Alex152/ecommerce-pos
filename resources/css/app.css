@@ -76,3 +76,15 @@ footer a:hover:after {
     transform: scaleX(1);
     transform-origin: left;
 }
+
+
+/*Gallery*/
+/* Para mejor experiencia de zoom */
+.cursor-zoom-in {
+    cursor: zoom-in;
+  }
+  .cursor-zoom-out {
+    cursor: zoom-out;
+  }
+
+  

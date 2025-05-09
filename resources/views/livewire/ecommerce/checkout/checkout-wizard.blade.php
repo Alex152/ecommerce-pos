@@ -336,57 +336,60 @@
                     
                     <div class="bg-white rounded-lg shadow-sm p-6">
                         <div class="space-y-4">
-                            <div 
-                                class="border rounded-lg p-4 cursor-pointer transition"
-                                :class="{ 
-                                    'border-indigo-500 bg-indigo-50': shippingMethod === 'standard', 
-                                    'border-gray-300 hover:border-gray-400': shippingMethod !== 'standard' 
-                                }"
-                                @click="shippingMethod = 'standard'"
-                            >
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-5 w-5 text-indigo-600">
-                                        <input 
-                                            type="radio" 
-                                            class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                            checked="{{ shippingMethod === 'standard' }}"
-                                        >
-                                    </div>
-                                    <div class="ml-3">
-                                        <h3 class="text-lg font-medium text-gray-900">Envío estándar</h3>
-                                        <p class="text-gray-600">Entrega en 3-5 días hábiles</p>
-                                    </div>
-                                    <div class="ml-auto text-lg font-medium text-gray-900">
-                                        $5.00
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div 
-                                class="border rounded-lg p-4 cursor-pointer transition"
-                                :class="{ 
-                                    'border-indigo-500 bg-indigo-50': shippingMethod === 'express', 
-                                    'border-gray-300 hover:border-gray-400': shippingMethod !== 'express' 
-                                }"
-                                @click="shippingMethod = 'express'"
-                            >
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-5 w-5 text-indigo-600">
-                                        <input 
-                                            type="radio" 
-                                            class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                            checked="{{ shippingMethod === 'express' }}"
-                                        >
-                                    </div>
-                                    <div class="ml-3">
-                                        <h3 class="text-lg font-medium text-gray-900">Envío exprés</h3>
-                                        <p class="text-gray-600">Entrega en 1-2 días hábiles</p>
-                                    </div>
-                                    <div class="ml-auto text-lg font-medium text-gray-900">
-                                        $15.00
-                                    </div>
-                                </div>
-                            </div>
+                            <!-- En el Step 2: Shipping Method -->
+<div 
+    class="border rounded-lg p-4 cursor-pointer transition"
+    :class="{ 
+        'border-indigo-500 bg-indigo-50': shippingMethod === 'standard', 
+        'border-gray-300 hover:border-gray-400': shippingMethod !== 'standard' 
+    }"
+    @click="$wire.shippingMethod = 'standard'"
+>
+    <div class="flex items-center">
+        <div class="flex-shrink-0 h-5 w-5 text-indigo-600">
+            <input 
+                type="radio" 
+                class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                wire:model="shippingMethod"
+                value="standard"
+            >
+        </div>
+        <div class="ml-3">
+            <h3 class="text-lg font-medium text-gray-900">Envío estándar</h3>
+            <p class="text-gray-600">Entrega en 3-5 días hábiles</p>
+        </div>
+        <div class="ml-auto text-lg font-medium text-gray-900">
+            $5.00
+        </div>
+    </div>
+</div>
+
+<div 
+    class="border rounded-lg p-4 cursor-pointer transition"
+    :class="{ 
+        'border-indigo-500 bg-indigo-50': shippingMethod === 'express', 
+        'border-gray-300 hover:border-gray-400': shippingMethod !== 'express' 
+    }"
+    @click="$wire.shippingMethod = 'express'"
+>
+    <div class="flex items-center">
+        <div class="flex-shrink-0 h-5 w-5 text-indigo-600">
+            <input 
+                type="radio" 
+                class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                wire:model="shippingMethod"
+                value="express"
+            >
+        </div>
+        <div class="ml-3">
+            <h3 class="text-lg font-medium text-gray-900">Envío exprés</h3>
+            <p class="text-gray-600">Entrega en 1-2 días hábiles</p>
+        </div>
+        <div class="ml-auto text-lg font-medium text-gray-900">
+            $15.00
+        </div>
+    </div>
+</div>
                         </div>
                     </div>
                     
@@ -413,21 +416,23 @@
                     <div class="bg-white rounded-lg shadow-sm p-6">
                         <div class="space-y-6">
                             <!-- Credit Card -->
-                            <div 
-                                class="border rounded-lg p-4 cursor-pointer transition"
-                                :class="{ 
-                                    'border-indigo-500 bg-indigo-50': paymentMethod === 'credit_card', 
-                                    'border-gray-300 hover:border-gray-400': paymentMethod !== 'credit_card' 
-                                }"
-                                @click="paymentMethod = 'credit_card'"
-                            >
+                            <!-- En el Step 3: Payment Method -->
+<div 
+    class="border rounded-lg p-4 cursor-pointer transition"
+    :class="{ 
+        'border-indigo-500 bg-indigo-50': paymentMethod === 'credit_card', 
+        'border-gray-300 hover:border-gray-400': paymentMethod !== 'credit_card' 
+    }"
+    @click="$wire.paymentMethod = 'credit_card'"
+>
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-5 w-5 text-indigo-600">
                                         <input 
-                                            type="radio" 
-                                            class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                            checked="{{ paymentMethod === 'credit_card' }}"
-                                        >
+                type="radio" 
+                class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                wire:model="paymentMethod"
+                value="credit_card"
+            >
                                     </div>
                                     <div class="ml-3">
                                         <h3 class="text-lg font-medium text-gray-900">Tarjeta de crédito/débito</h3>
@@ -494,20 +499,21 @@
                             
                             <!-- PayPal -->
                             <div 
-                                class="border rounded-lg p-4 cursor-pointer transition"
-                                :class="{ 
-                                    'border-indigo-500 bg-indigo-50': paymentMethod === 'paypal', 
-                                    'border-gray-300 hover:border-gray-400': paymentMethod !== 'paypal' 
-                                }"
-                                @click="paymentMethod = 'paypal'"
-                            >
+    class="border rounded-lg p-4 cursor-pointer transition"
+    :class="{ 
+        'border-indigo-500 bg-indigo-50': paymentMethod === 'paypal', 
+        'border-gray-300 hover:border-gray-400': paymentMethod !== 'paypal' 
+    }"
+    @click="$wire.paymentMethod = 'paypal'"
+>
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-5 w-5 text-indigo-600">
                                         <input 
-                                            type="radio" 
-                                            class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                            checked="{{ paymentMethod === 'paypal' }}"
-                                        >
+                type="radio" 
+                class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                wire:model="paymentMethod"
+                value="paypal"
+            >
                                     </div>
                                     <div class="ml-3">
                                         <h3 class="text-lg font-medium text-gray-900">PayPal</h3>
@@ -521,20 +527,21 @@
                             
                             <!-- Bank Transfer -->
                             <div 
-                                class="border rounded-lg p-4 cursor-pointer transition"
-                                :class="{ 
-                                    'border-indigo-500 bg-indigo-50': paymentMethod === 'bank_transfer', 
-                                    'border-gray-300 hover:border-gray-400': paymentMethod !== 'bank_transfer' 
-                                }"
-                                @click="paymentMethod = 'bank_transfer'"
-                            >
+    class="border rounded-lg p-4 cursor-pointer transition"
+    :class="{ 
+        'border-indigo-500 bg-indigo-50': paymentMethod === 'bank_transfer', 
+        'border-gray-300 hover:border-gray-400': paymentMethod !== 'bank_transfer' 
+    }"
+    @click="$wire.paymentMethod = 'bank_transfer'"
+>
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-5 w-5 text-indigo-600">
                                         <input 
-                                            type="radio" 
-                                            class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                            checked="{{ paymentMethod === 'bank_transfer' }}"
-                                        >
+                type="radio" 
+                class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                wire:model="paymentMethod"
+                value="bank_transfer"
+            >
                                     </div>
                                     <div class="ml-3">
                                         <h3 class="text-lg font-medium text-gray-900">Transferencia bancaria</h3>
@@ -571,21 +578,27 @@
                     <div class="bg-white rounded-lg shadow-sm p-6">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Dirección de envío</h3>
                         <div class="bg-gray-50 p-4 rounded-lg mb-6">
-                            <p class="text-gray-900">{{ shippingAddress['first_name'] }} {{ shippingAddress['last_name'] }}</p>
-                            <p class="text-gray-600">{{ shippingAddress['address_1'] }}</p>
-                            <p class="text-gray-600">{{ shippingAddress['city'] }}, {{ shippingAddress['state'] }} {{ shippingAddress['zip_code'] }}</p>
-                            <p class="text-gray-600">{{ shippingAddress['country'] }}</p>
-                            <p class="text-gray-600">Tel: {{ shippingAddress['phone'] }}</p>
-                        </div>
+                            <p class="text-gray-900">
+        @if($shippingMethod === 'standard')
+            Envío estándar (3-5 días hábiles)
+        @else
+            Envío exprés (1-2 días hábiles)
+        @endif
+    </p>
+    <p class="text-gray-900 font-medium">
+        ${{ number_format($this->getShippingCost(), 2) }}
+    </p>
                         
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Método de envío</h3>
                         <div class="bg-gray-50 p-4 rounded-lg mb-6">
-                            <p class="text-gray-900">
-                                {{ shippingMethod === 'standard' ? 'Envío estándar (3-5 días hábiles)' : 'Envío exprés (1-2 días hábiles)' }}
-                            </p>
-                            <p class="text-gray-900 font-medium">
-                                ${{ number_format(getShippingCost(), 2) }}
-                            </p>
+                            @if($paymentMethod === 'credit_card')
+        <p class="text-gray-900">Tarjeta de crédito/débito</p>
+        <p class="text-gray-600">Terminada en {{ substr($cardDetails['number'], -4) }}</p>
+    @elseif($paymentMethod === 'paypal')
+        <p class="text-gray-900">PayPal</p>
+    @else
+        <p class="text-gray-900">Transferencia bancaria</p>
+    @endif
                         </div>
                         
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Método de pago</h3>
@@ -602,11 +615,12 @@
                         
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Resumen del pedido</h3>
                         <div class="border-t border-gray-200 pt-4">
-                            @foreach(\Cart::getContent() as $item)
+                            @foreach(\Cart::Content() as $item)
                                 <div class="flex items-center py-4">
                                     <div class="flex-shrink-0 w-16 h-16 border border-gray-200 rounded-md overflow-hidden">
                                         <img 
-                                            src="{{ $item->associatedModel->getFirstMediaUrl('default', 'thumb') }}" 
+                                            {{--src="{{ $item->associatedModel->getFirstMediaUrl('default', 'thumb') }}" --}}
+                                            src="{{ is_object($item->associatedModel) && method_exists($item->associatedModel, 'getFirstMediaUrl') ? $item->associatedModel->getFirstMediaUrl('main_image', 'thumb') : asset('images/default-product.jpg') }}" 
                                             alt="{{ $item->name }}"
                                             class="w-full h-full object-cover"
                                         >
@@ -627,15 +641,17 @@
                             <div class="border-t border-gray-200 pt-4 space-y-4">
                                 <div class="flex justify-between text-base text-gray-600">
                                     <p>Subtotal</p>
-                                    <p>${{ number_format(\Cart::getSubTotal(), 2) }}</p>
+                                    <p>${{ number_format(\Cart::SubTotal(), 2) }}</p>
                                 </div>
                                 <div class="flex justify-between text-base text-gray-600">
                                     <p>Envío</p>
-                                    <p>${{ number_format(getShippingCost(), 2) }}</p>
+                                    {{--<p>${{ number_format(getShippingCost(), 2) }}</p>--}}
+                                    <p>${{ number_format($this->getShippingCost(), 2) }}</p>
                                 </div>
                                 <div class="flex justify-between text-base font-medium text-gray-900">
                                     <p>Total</p>
-                                    <p>${{ number_format(\Cart::getTotal() + getShippingCost(), 2) }}</p>
+                                    {{--<p>${{ number_format(\Cart::Total() + getShippingCost(), 2) }}</p>--}}
+                                    <p>${{ number_format(\Cart::Total() + $this->getShippingCost(), 2) }}</p>
                                 </div>
                             </div>
                         </div>
@@ -667,7 +683,7 @@
                     <div class="space-y-4">
                         <div class="flex justify-between">
                             <span class="text-gray-600">Subtotal</span>
-                            <span class="text-gray-900">${{ number_format(\Cart::getSubTotal(), 2) }}</span>
+                            <span class="text-gray-900">${{ number_format(\Cart::SubTotal(), 2) }}</span>
                         </div>
                         
                         <div class="flex justify-between">
@@ -685,9 +701,9 @@
                             <span class="text-base font-medium text-gray-900">Total</span>
                             <span class="text-base font-medium text-gray-900">
                                 @if($currentStep >= 2)
-                                    ${{ number_format(\Cart::getTotal() + getShippingCost(), 2) }}
+                                    ${{ number_format(\Cart::Total() + $this->getShippingCost(), 2) }}
                                 @else
-                                    ${{ number_format(\Cart::getTotal(), 2) }}
+                                    ${{ number_format(\Cart::Total(), 2) }}
                                 @endif
                             </span>
                         </div>
@@ -695,14 +711,15 @@
                     
                     <!-- Cart Items -->
                     <div class="mt-6 border-t border-gray-200 pt-6">
-                        <h3 class="text-sm font-medium text-gray-900 mb-2">Productos ({{ \Cart::getContent()->count() }})</h3>
+                        <h3 class="text-sm font-medium text-gray-900 mb-2">Productos ({{ \Cart::Content()->count() }})</h3>
                         
                         <ul class="divide-y divide-gray-200">
-                            @foreach(\Cart::getContent() as $item)
+                            @foreach(\Cart::Content() as $item)
                                 <li class="py-4 flex">
                                     <div class="flex-shrink-0 w-16 h-16 border border-gray-200 rounded-md overflow-hidden">
                                         <img 
-                                            src="{{ $item->associatedModel->getFirstMediaUrl('default', 'thumb') }}" 
+                                            {{--src="{{ $item->associatedModel->getFirstMediaUrl('default', 'thumb') }}" --}}
+                                            src="{{ $item->attributes->image_url ?? asset('images/default-product.jpg') }}" 
                                             alt="{{ $item->name }}"
                                             class="w-full h-full object-cover"
                                         >

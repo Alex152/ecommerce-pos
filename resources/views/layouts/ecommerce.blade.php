@@ -10,9 +10,21 @@
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
     <!-- Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Estilos para Alpine.js -->
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+  
+    </style>
+
+
     
     <!-- Scripts -->
     @livewireStyles
@@ -31,13 +43,14 @@
     <livewire:ecommerce.layouts.footer />
     
     <!-- Cart Sidebar -->
-    <livewire:ecommerce.cart.mini-cart />
+    <livewire:ecommerce.cart.mini-cart   />
     
     <!-- Notifications -->
     <div aria-live="assertive" class="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start z-50">
         <div class="w-full flex flex-col items-center space-y-4 sm:items-end">
             <!-- Notification panel, dynamically insert this -->
             <div x-data="{ show: false, message: '', type: '' }"
+                 x-cloak
                  x-show="show"
                  x-transition:enter="transform ease-out duration-300 transition"
                  x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
@@ -84,7 +97,10 @@
     </div>
 
     @livewireScripts
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
+    {{-- <!-- Conflicto con livewire al desplegar submenus en header-->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>  
+    --}}
+
     @stack('scripts')
 </body>
 </html>

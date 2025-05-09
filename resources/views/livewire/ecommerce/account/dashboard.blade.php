@@ -19,7 +19,7 @@
                         <li class="border-b pb-4">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <p class="font-medium">Pedido #{{ $order->number }}</p>
+                                    <p class="font-medium">Pedido #{{ $order->order_number }}</p>
                                     <p class="text-sm text-gray-500">{{ $order->created_at->format('d M Y') }}</p>
                                 </div>
                                 <span class="px-2 py-1 text-xs rounded-full 

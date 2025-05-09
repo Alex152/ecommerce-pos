@@ -73,9 +73,12 @@
             </p>
             
             <div class="flex space-x-6">
+                {{-- Paquete demasiado pesado +50 mb
                 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visa/visa-original.svg" class="h-8 opacity-70 hover:opacity-100 transition" alt="Visa">
                 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mastercard/mastercard-original.svg" class="h-8 opacity-70 hover:opacity-100 transition" alt="Mastercard">
                 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/paypal/paypal-original.svg" class="h-8 opacity-70 hover:opacity-100 transition" alt="PayPal">
+                --}}
+                
             </div>
         </div>
     </div>
